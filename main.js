@@ -10,6 +10,12 @@ const modalBody = document.querySelector(".modal-body");
 const modalFooter = document.querySelector(".modal-footer");
 // ------------ Bootstrap Modal ------------
 
+// ------------ Search ------------
+const searchGlassIcon = document.querySelector("#search-glass");
+const searchClearIcon = document.querySelector("#search-clear");
+const searchInput = document.querySelector("#search-input");
+// ------------ Search ------------
+
 let allStudents = [];
 
 function fetchStudents() {
