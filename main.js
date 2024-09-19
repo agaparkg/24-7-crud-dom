@@ -1,17 +1,23 @@
 const url = "https://63000b629350a1e548e9abfc.mockapi.io/api/v1/students/";
 const tableBody = document.querySelector("tbody");
 const addStudentBtn = document.querySelector("#add-student");
-const closeModal = document.querySelector("#close-modal");
-const submitModal = document.querySelector("#submit-modal");
-const myModal = document.querySelector("#myModal");
 
-let studentId;
+// ------------ Bootstrap Modal ------------
+// const myModal = bootstrap.Modal.getOrCreateInstance("#myModal");
+const myModal = new bootstrap.Modal("#myModal");
+const modalTitle = document.querySelector(".modal-title");
+const modalBody = document.querySelector(".modal-body");
+const modalFooter = document.querySelector(".modal-footer");
+// ------------ Bootstrap Modal ------------
+
+let allStudents = [];
 
 function fetchStudents() {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      createStudents(data);
+      allStudents = data;
+      createStudents(allStudents);
     })
     .catch((error) => console.log(error));
 }
@@ -51,17 +57,31 @@ function createStudents(students) {
 }
 
 function deleteStudent(id) {
-  studentId = id;
+  const mBody = `<p>Are you sure you wanna delete student with id <strong>${id}</strong></p>`;
+  const mFooter = `<button
+                    data-bs-dismiss="modal"
+                    type="button"
+                    class="btn btn-secondary"
+                    id="close-modal"
+                  >
+                    No
+                  </button>
+                  <button onclick="yesDeleteStudent('${id}')" id="submit-modal" type="button" class="btn btn-primary">
+                    Yes
+                  </button>`;
+  displayModalAndContent("Delete A Student?", mBody, mFooter);
 }
 
-function fetchDeleteStudent(id) {
-  fetch(url + id, {
+function yesDeleteStudent(id) {
+  const options = {
     method: "DELETE",
-  })
+  };
+  fetch(url + id, options)
     .then((res) => res.json())
     .then((data) => {
       console.log(`Student with id ${data.id} has been deleted!`);
       fetchStudents();
+      myModal.hide();
     })
     .catch((error) => console.log(error));
 }
@@ -72,17 +92,46 @@ function fetchDeleteStudent(id) {
 // DELETE - DELETE
 
 addStudentBtn.addEventListener("click", () => {
-  const modal = bootstrap.Modal.getOrCreateInstance(myModal);
-  modal.show();
+  const mBody = `<form>
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-2 col-form-label"
+                      >First Name</label
+                    >
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="inputEmail3" />
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputPassword3" class="col-sm-2 col-form-label"
+                      >Last Name</label
+                    >
+                    <div class="col-sm-10">
+                      <input type="text" class="form-control" id="inputPassword3" />
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-10">
+                      <button
+                        data-bs-dismiss="modal"
+                        type="button"
+                        class="btn btn-secondary"
+                        id="close-modal"
+                      >
+                        Cancel
+                      </button>
+                      <button id="submit-modal" type="button" class="btn btn-primary">
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </form>`;
+  const mFooter = "";
+  displayModalAndContent("Add New Student", mBody, mFooter);
 });
 
-closeModal.addEventListener("click", () => {
-  const modal = bootstrap.Modal.getOrCreateInstance(myModal);
-  modal.hide();
-});
-
-submitModal.addEventListener("click", () => {
-  fetchDeleteStudent(studentId);
-  const modal = bootstrap.Modal.getOrCreateInstance(myModal);
-  modal.hide();
-});
+function displayModalAndContent(title, body, footer) {
+  myModal.show();
+  modalTitle.innerHTML = title;
+  modalBody.innerHTML = body;
+  modalFooter.innerHTML = footer;
+}
