@@ -39,11 +39,11 @@ function createStudents(students) {
                                 <td>${fname}</td>
                                 <td>${lname}</td>
                                 <td>
-                                    <button id="edit" type="button" class="btn btn-secondary">
-                                    <i class="bi bi-pencil"></i>
+                                    <button onclick="editStudent(${id})" id="edit" type="button" class="btn btn-secondary">
+                                      <i class="bi bi-pencil"></i>
                                     </button>
                                     <button onclick="deleteStudent(${id})" id="delete" type="button" class="btn btn-danger">
-                                    <i class="bi bi-trash"></i>
+                                      <i class="bi bi-trash"></i>
                                     </button>
                                 </td>
                             </tr>`;
@@ -54,6 +54,48 @@ function createStudents(students) {
                                 <td colspan="4">No data found!</td>
                             </tr>`;
   }
+}
+
+function editStudent(id) {
+  const currStudent = allStudents.find((student) => student.id == id);
+
+  const { fname, lname } = currStudent;
+
+  const mBody = `<form onsubmit="submitFormData(event, true, ${id})">
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-2 col-form-label"
+                      >First Name</label
+                    >
+                    <div class="col-sm-10">
+                      <input value="${fname}" required type="text" class="form-control modal-inputs" id="fname" />
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="inputPassword3" class="col-sm-2 col-form-label"
+                      >Last Name</label
+                    >
+                    <div class="col-sm-10">
+                      <input value="${lname}" required type="text" class="form-control modal-inputs" id="lname" />
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <div class="col-sm-10">
+                      <button
+                        data-bs-dismiss="modal"
+                        type="button"
+                        class="btn btn-secondary"
+                        id="close-modal"
+                      >
+                        Cancel
+                      </button>
+                      <button id="submit-modal" type="submit" class="btn btn-primary">
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </form>`;
+  const mFooter = "";
+  displayModalAndContent("Edit Student", mBody, mFooter);
 }
 
 function deleteStudent(id) {
@@ -92,13 +134,13 @@ function yesDeleteStudent(id) {
 // DELETE - DELETE
 
 addStudentBtn.addEventListener("click", () => {
-  const mBody = `<form>
+  const mBody = `<form onsubmit="submitFormData(event, false, null)">
                   <div class="form-group row">
                     <label for="inputEmail3" class="col-sm-2 col-form-label"
                       >First Name</label
                     >
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="inputEmail3" />
+                      <input required type="text" class="form-control modal-inputs" id="fname" />
                     </div>
                   </div>
                   <div class="form-group row">
@@ -106,7 +148,7 @@ addStudentBtn.addEventListener("click", () => {
                       >Last Name</label
                     >
                     <div class="col-sm-10">
-                      <input type="text" class="form-control" id="inputPassword3" />
+                      <input required type="text" class="form-control modal-inputs" id="lname" />
                     </div>
                   </div>
                   <div class="form-group row">
@@ -119,7 +161,7 @@ addStudentBtn.addEventListener("click", () => {
                       >
                         Cancel
                       </button>
-                      <button id="submit-modal" type="button" class="btn btn-primary">
+                      <button id="submit-modal" type="submit" class="btn btn-primary">
                         Submit
                       </button>
                     </div>
@@ -128,6 +170,45 @@ addStudentBtn.addEventListener("click", () => {
   const mFooter = "";
   displayModalAndContent("Add New Student", mBody, mFooter);
 });
+
+function submitFormData(event, editMode, id) {
+  event.preventDefault();
+
+  // const modal = document.querySelector("#myModal");
+  const inputElements = document.querySelectorAll("input.modal-inputs");
+
+  const formData = {};
+
+  for (let input of inputElements) {
+    formData[input.id] = input.value;
+  }
+
+  // fetch with POST method
+
+  const options = {
+    method: editMode ? "PUT" : "POST",
+    headers: {
+      "Content-type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    body: JSON.stringify(formData),
+  };
+
+  const customUrl = editMode ? url + id : url;
+
+  fetch(customUrl, options)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(
+        `Student with id ${data.id} has been successfully ${
+          editMode ? "updated" : "added"
+        }!`
+      );
+      fetchStudents();
+      myModal.hide();
+    })
+    .catch((error) => console.log(error));
+}
 
 function displayModalAndContent(title, body, footer) {
   myModal.show();
