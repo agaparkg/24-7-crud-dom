@@ -222,3 +222,34 @@ function displayModalAndContent(title, body, footer) {
   modalBody.innerHTML = body;
   modalFooter.innerHTML = footer;
 }
+
+searchInput.addEventListener("keyup", (event) => {
+  const value = event.target.value.trim().toLowerCase();
+  let filteredStudents = [];
+
+  if (value !== "") {
+    searchGlassIcon.classList.add("d-none");
+    searchClearIcon.classList.remove("d-none");
+
+    filteredStudents = allStudents.filter((student) => {
+      return (
+        student.fname.toLowerCase().includes(value) ||
+        student.lname.toLowerCase().includes(value)
+      );
+    });
+
+    createStudents(filteredStudents);
+  } else {
+    searchGlassIcon.classList.remove("d-none");
+    searchClearIcon.classList.add("d-none");
+    createStudents(allStudents);
+  }
+});
+
+searchClearIcon.addEventListener("click", () => {
+  searchInput.value = "";
+  searchGlassIcon.classList.remove("d-none");
+  searchClearIcon.classList.add("d-none");
+
+  createStudents(allStudents);
+});
