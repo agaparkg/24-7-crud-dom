@@ -38,12 +38,17 @@ function createStudents(students) {
   if (students.length) {
     students.forEach((student) => {
       // {age: 2, fname: "Alex"}
-      const { fname, lname, id } = student;
+      const { fname, lname, id, email, github, avatar } = student;
 
       const newStudent = `<tr>
                                 <td>${id}</td>
+                                <td>
+                                    <img src="${avatar}" alt="" width="100" />
+                                </td>
                                 <td>${fname}</td>
                                 <td>${lname}</td>
+                                <td>${email}</td>
+                                <td>${github}</td>
                                 <td>
                                     <button onclick="editStudent(${id})" id="edit" type="button" class="btn btn-secondary">
                                       <i class="bi bi-pencil"></i>
@@ -57,7 +62,7 @@ function createStudents(students) {
     });
   } else {
     tableBody.innerHTML = `<tr>
-                                <td colspan="4">No data found!</td>
+                                <td colspan="6">No data found!</td>
                             </tr>`;
   }
 }
